@@ -133,7 +133,7 @@ ui <- fluidPage(
                               choices = c("Exclude non-contested elections (Uganda 2 study)" = "contested_elections",
                                           "Exclude LCV councilors (Uganda 2 study)" = "councilors",
                                           "Use alternative coding of news (Uganda 1 study)" = "n_alt"),
-                              selected = c("contested_elections","councilors")),
+                              selected = c("contested_elections")),
            downloadButton("downloadData", "Download data")))
     ),
   
