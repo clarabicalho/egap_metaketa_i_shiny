@@ -122,13 +122,14 @@ ui <- fluidPage(
     column(3,
            #Option 6: Covariates
            checkboxGroupInput('cov', 'Covariates', 
-                                choices = cov_opts)),
+                                choices = cov_opts,
+                              selected = cov_opts)),
 
     column(3, 
            #Option 6: Covariates
            radioButtons('n_cov', 'Include Nij as covariate?', 
                         choices = c("Yes" = "TRUE", "No" = "FALSE"),
-                        selected = "FALSE"),
+                        selected = "TRUE"),
            checkboxGroupInput("contested", "Contested specifications",
                               choices = c("Exclude non-contested elections (Uganda 2 study)" = "contested_elections",
                                           "Exclude LCV councilors (Uganda 2 study)" = "councilors",
