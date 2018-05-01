@@ -26,7 +26,8 @@ source("functions.R")
 # Parameters passed onto Shiny --------------------------------------------
 
 # Dependent Variable
-depvar_opts <- list("Incumbent Vote Choice (M1)" = "m1",
+depvar_opts <- list("Vote for Incumbent (M1)" = "m1",
+                    "Vote against Incumbent"  = "m1_against",
                     "Voter Turnout (M3)"         = "m3",
                     "Effort (M5)"                = "m5",
                     "Dishonesty (M6)"            = "m6",
@@ -109,13 +110,13 @@ ui <- fluidPage(
                           selected = "TRUE")),
     column(2,
              #Option 4: Country subset
-           checkboxGroupInput('country', 'Study', 
-                                choices = c("Meta (default)" = "all",
-                                            "Meta (alternative)" = "Meta (alternative)",
+           checkboxGroupInput('country', 'Show results for', 
+                                choices = c("Meta (all studies)" = "all",
+                                            "Meta (subgroup)" = "subgroup",
                                             country_opts),
-                                selected = c("all","alt"))),
+                                selected = c("all","subgroup"))),
     column(1,
-           checkboxGroupInput('ma_alt', 'Meta (alternative)', 
+           checkboxGroupInput('ma_select', 'Meta (subgroup)', 
                               choices = country_opts,
                               selected = country_opts)),
     column(3,
@@ -131,7 +132,7 @@ ui <- fluidPage(
            checkboxGroupInput("contested", "Contested specifications",
                               choices = c("Exclude non-contested elections (Uganda 2 study)" = "contested_elections",
                                           "Exclude LCV councilors (Uganda 2 study)" = "councilors",
-                                          "Use alternative coding of good news (Uganda 1 study)" = "n_alt"),
+                                          "Use alternative coding of news (Uganda 1 study)" = "n_alt"),
                               selected = c("contested_elections","councilors")),
            downloadButton("downloadData", "Download data")))
     ),
@@ -157,7 +158,7 @@ server <- function(input, output) {
   # })
 
   output$print <- renderPrint({
-    cov()
+    str(table())
     # str(table())
     # contested()
     # input$contested
@@ -196,14 +197,15 @@ server <- function(input, output) {
   })
   
   madat_alt <- reactive({
-    madat[madat$ctry %in% input$ma_alt,]
+    data <- data()
+    data[data$ctry %in% input$ma_select,]
   })
   
   table <- reactive({
     # covar <- cov()
     # cov <- input$cov
     
-    c_list <- input$country[!input$country %in% "Meta (alternative)"]
+    c_list <- input$country[!input$country %in% "subgroup"]
     
     tab <- do.call("rbind", lapply(
       c_list, function(i) {
@@ -216,24 +218,27 @@ server <- function(input, output) {
                        exclude_councilors = councilors(),
                        with_N = input$n_cov,
                        weights = input$weight,
-                       ri_p = "ignore")$estimates %>% summary %>% .$coefficients %>% .[1,]
-    
-    results
+                       ri_p = "ignore")
+    row <- results$estimates %>% summary %>% .$coefficients %>% .[1,]
+    row[["N"]] <- results$estimates$N
+    row
       }))
     
     meta_alt <-  NULL
-    meta_alt <- if("Meta (alternative)" %in% input$country){
-      est <- results(dat = madat_alt(),
+    meta_alt <- if("subgroup" %in% input$country){
+      results <- results(dat = madat_alt(),
                      depvar = input$depvar,
                      news = input$news,
                      country = "all",
-                     # cov = covar,
+                     cov = cov(),
                      contested_seats = contested(),
                      exclude_councilors = councilors(),
                      with_N = input$n_cov,
                      weights = input$weight,
                      ri_p = "ignore")
-      est$estimates %>% summary() %>% .$coefficients %>% .[1,]
+      row <- results$estimates %>% summary() %>% .$coefficients %>% .[1,]
+      row[["N"]] <- results$estimates$N
+      row
     }
     
     # tab <- rbind(tab[1,], meta_alt)
@@ -243,20 +248,20 @@ server <- function(input, output) {
                               input$country == "mex" ~ "Mexico",
                               input$country == "ug1" ~ "Uganda 1",
                               input$country == "ug2" ~ "Uganda 2",
-                              input$country == "all" ~  "Meta (default)")
+                              input$country == "all" ~  "Meta (all studies)")
     
     rownames(tab) <- country_list[!is.na(country_list)]
     
     tab <- rbind(meta_alt, tab)
 
-    if(!is.null(meta_alt)) rownames(tab)[1] <- "Meta (alternative)"
+    if(!is.null(meta_alt)) rownames(tab)[1] <- "Meta (subgroup)"
     
     tab
   })
   
   title <- reactive({
     news <- input$news
-    depvar <- case_when(input$depvar == "m1" ~ "incumbent vote choice",
+    depvar <- case_when(input$depvar == "m1" ~ "vote for incumbent",
                         input$depvar == "m3" ~ "voter turnout",
                         input$depvar == "m5" ~ "effort",
                         input$depvar == "m6" ~ "honesty",
