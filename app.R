@@ -20,8 +20,8 @@ library(lfe)
 library(shinythemes)
 library(shinyBS)
 
-load("../madat.Rda")
-source("../functions.R")
+load("madat.Rda")
+source("functions.R")
 
 # Parameters passed onto Shiny --------------------------------------------
 
