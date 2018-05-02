@@ -105,8 +105,8 @@ ui <- fluidPage(
                           choices = good_opts),
              #Option 5: Weights
              radioButtons("weight", "",
-                          choices = list("Weighted"   = "TRUE",
-                                         "Unweighted" = "FALSE"),
+                          choices = list("Weight countries equally"   = "TRUE",
+                                         "Weight all subjects equally" = "FALSE"),
                           selected = "TRUE")),
     column(2,
              #Option 4: Country subset
