@@ -67,7 +67,7 @@ cov_opts <- list("Age (M14)" = "m14i",
 
 ui <- fluidPage(
   
-  theme = shinytheme("yeti"),
+  # theme = shinytheme("yeti"),
   # shinythemes::themeSelector(),
   
   # App title ----
@@ -76,11 +76,11 @@ ui <- fluidPage(
   
   br(),
   
-  bsCollapsePanel("About", value="About",
-                  p("This app implements the core meta analyses for Metaketa 1 and allows users to explore sensitivity of results to alternative specifications."),
-                  p("Metaketa I Pre-meta-analysis Plan:", a("20150309AA", href="http://egap.org/registration/736")),
-                  p("Visit the ", a("EGAP website", href="http://egap.org/metaketa/metaketa-information-and-accountability"), "to learn more.")
-  ),
+  # bsCollapsePanel("About", value="About",
+  #                 p("This app implements the core meta analyses for Metaketa 1 and allows users to explore sensitivity of results to alternative specifications."),
+  #                 p("Metaketa I Pre-meta-analysis Plan:", a("20150309AA", href="http://egap.org/registration/736")),
+  #                 p("Visit the ", a("EGAP website", href="http://egap.org/metaketa/metaketa-information-and-accountability"), "to learn more.")
+  # ),
   
   br(),
   
@@ -139,8 +139,8 @@ ui <- fluidPage(
            actionButton("addData", "Add data")))
     ),
   
-  bsCollapsePanel("Notes", value="Notes",
-                  p("Notes on options above (weights only affect certain countries), discussion of contested decisions? "))
+  # bsCollapsePanel("Notes", value="Notes",
+  #                 p("Notes on options above (weights only affect certain countries), discussion of contested decisions? "))
   )
 
 # Define server logic required to plot output ----
@@ -320,8 +320,6 @@ server <- function(input, output) {
 }
 
 shinyApp(ui = ui, server = server)
-library(rsconnect)
-deployApp()
 
 # run app -----------------------------------------------------------------
 
