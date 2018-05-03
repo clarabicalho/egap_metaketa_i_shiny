@@ -77,7 +77,7 @@ ui <- fluidPage(
   br(),
   
   bsCollapsePanel("About", value="About",
-                  p("Reference to book? Explain MK in general? Refer to EGAP website?"),
+                  p("This app implements the core meta analyses for Metaketa 1 and allows users to explore sensitivity of results to alternative specifications."),
                   p("Metaketa I Pre-meta-analysis Plan:", a("20150309AA", href="http://egap.org/registration/736")),
                   p("Visit the ", a("EGAP website", href="http://egap.org/metaketa/metaketa-information-and-accountability"), "to learn more.")
   ),
@@ -135,7 +135,8 @@ ui <- fluidPage(
                                           "Exclude LCV councilors (Uganda 2 study)" = "councilors",
                                           "Use alternative coding of news (Uganda 1 study)" = "n_alt"),
                               selected = c("contested_elections")),
-           downloadButton("downloadData", "Download data")))
+           downloadButton("downloadData", "Download data"),
+           actionButton("addData", "Add data")))
     ),
   
   bsCollapsePanel("Notes", value="Notes",
@@ -146,7 +147,16 @@ ui <- fluidPage(
 
 server <- function(input, output) {
 
-
+  observeEvent(input$addData, {
+    showModal(modalDialog(
+      title = "Add your data to the Metaketa I results",
+      "(For illustration purposes only! Do not attempt during public talks...)",
+      fileInput("import_file1", "Choose .csv file", accept = ".csv"),
+      easyClose = TRUE,
+      footer = NULL
+    ))
+  })
+  
   cov <- reactive({
    paste(input$cov, collapse = "+")
   })
@@ -309,7 +319,9 @@ server <- function(input, output) {
   
 }
 
-shinyApp(ui = ui, server = server)
+# shinyApp(ui = ui, server = server)
+library(rsconnect)
+deployApp()
 
 # run app -----------------------------------------------------------------
 
