@@ -67,7 +67,7 @@ cov_opts <- list("Age (M14)" = "m14i",
 
 ui <- fluidPage(
   
-  # theme = shinytheme("yeti"),
+  theme = shinytheme("yeti"),
   # shinythemes::themeSelector(),
   
   # App title ----
@@ -76,11 +76,11 @@ ui <- fluidPage(
   
   br(),
   
-  # bsCollapsePanel("About", value="About",
-  #                 p("This app implements the core meta analyses for Metaketa 1 and allows users to explore sensitivity of results to alternative specifications."),
-  #                 p("Metaketa I Pre-meta-analysis Plan:", a("20150309AA", href="http://egap.org/registration/736")),
-  #                 p("Visit the ", a("EGAP website", href="http://egap.org/metaketa/metaketa-information-and-accountability"), "to learn more.")
-  # ),
+  bsCollapsePanel("About", value="About",
+                  p("This app implements the core meta analyses for Metaketa 1 and allows users to explore sensitivity of results to alternative specifications."),
+                  p("Visit the ", a("EGAP website", href="http://egap.org/metaketa/metaketa-information-and-accountability"), "to learn more."),
+                  p("Metaketa I Pre-meta-analysis Plan:", a("20150309AA", href="http://egap.org/registration/736"))
+  ),
   
   br(),
   
@@ -106,8 +106,10 @@ ui <- fluidPage(
              #Option 5: Weights
              radioButtons("weight", "",
                           choices = list("Weight countries equally"   = "TRUE",
-                                         "Weight all subjects equally" = "FALSE"),
-                          selected = "TRUE")),
+                                         "Weight subjects equally" = "FALSE"),
+                          selected = "TRUE"),
+           downloadButton("downloadData", "Download data"),
+           actionButton("addData", "Add data")),
     column(2,
              #Option 4: Country subset
            checkboxGroupInput('country', 'Show results for', 
@@ -132,15 +134,17 @@ ui <- fluidPage(
                         selected = "TRUE"),
            checkboxGroupInput("contested", "Contested specifications",
                               choices = c("Exclude non-contested elections (Uganda 2 study)" = "contested_elections",
-                                          "Exclude LCV councilors (Uganda 2 study)" = "councilors",
+                                          "Exclude redistricted councilors (Uganda 2 study)" = "excl_redistrict",
+                                          "Exclude candidates who switched parties (Uganda 2 study)" = "excl_switch",
+                                          # "Exclude LCV councilors (Uganda 2 study)" = "councilors",
+                                          "Include LCV councilors only (Uganda 2 study)" = "councilors_only",
                                           "Use alternative coding of news (Uganda 1 study)" = "n_alt"),
-                              selected = c("contested_elections")),
-           downloadButton("downloadData", "Download data"),
-           actionButton("addData", "Add data")))
-    )
+                              selected = c("contested_elections"))
+           )
+    ))#,
   
   # bsCollapsePanel("Notes", value="Notes",
-  #                 p("Notes on options above (weights only affect certain countries), discussion of contested decisions? "))
+                  # p("Notes on options above (weights only affect certain countries), discussion of contested decisions? "))
   )
 
 # Define server logic required to plot output ----
@@ -204,6 +208,17 @@ server <- function(input, output) {
   if(N_alternative()=="TRUE"){
     madat$N_good[madat$ctry=="ug1"] <- 1*(madat$N_alt[madat$ctry=="ug1"]>0)
   }
+  if("excl_redistrict" %in% input$contested){
+    madat <- madat[!is.na(madat$lc5.councillor.redistricted2016),]
+  }
+  if("excl_switch" %in% input$contested){
+    madat <- madat[is.na(madat$lc5.chair.party.switch)|madat$lc5.chair.party.switch==0,]
+    madat <- madat[is.na(madat$lc5.councillor.party.switch)|madat$lc5.councillor.party.switch==0,]
+  }
+  if("councilors_only" %in% input$contested){
+    madat <- madat[(madat$ug2_councilor_dummy == 1 & madat$ctry == "ug2")|madat$ctry!="ug2",]
+  }
+  
   madat
   })
   
@@ -288,7 +303,7 @@ server <- function(input, output) {
   
   output$tableResults <- renderTable({
     table()
-  }, rownames = TRUE)
+  }, rownames = TRUE, digits = 3)
   
   output$plotResults <- renderPlot({
       par(mar = c(5, 8, 4, 2))
