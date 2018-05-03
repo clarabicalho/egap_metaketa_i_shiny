@@ -137,7 +137,7 @@ ui <- fluidPage(
                               selected = c("contested_elections")),
            downloadButton("downloadData", "Download data"),
            actionButton("addData", "Add data")))
-    ),
+    )
   
   # bsCollapsePanel("Notes", value="Notes",
   #                 p("Notes on options above (weights only affect certain countries), discussion of contested decisions? "))
