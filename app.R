@@ -319,7 +319,7 @@ server <- function(input, output) {
   
 }
 
-# shinyApp(ui = ui, server = server)
+shinyApp(ui = ui, server = server)
 library(rsconnect)
 deployApp()
 
