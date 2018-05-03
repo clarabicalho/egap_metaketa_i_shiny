@@ -116,7 +116,7 @@ ui <- fluidPage(
                                 choices = c("Meta (all studies)" = "all",
                                             "Meta (subgroup)" = "subgroup",
                                             country_opts),
-                                selected = c("all","subgroup"))),
+                                selected = c("all", "subgroup", country_opts))),
     column(1,
            checkboxGroupInput('ma_select', 'Meta (subgroup)', 
                               choices = country_opts,
@@ -209,7 +209,7 @@ server <- function(input, output) {
     madat$N_good[madat$ctry=="ug1"] <- 1*(madat$N_alt[madat$ctry=="ug1"]>0)
   }
   if("excl_redistrict" %in% input$contested){
-    madat <- madat[!is.na(madat$lc5.councillor.redistricted2016),]
+    madat <- madat[is.na(madat$lc5.councillor.redistricted2016)|madat$lc5.councillor.redistricted2016=="TRUE",]
   }
   if("excl_switch" %in% input$contested){
     madat <- madat[is.na(madat$lc5.chair.party.switch)|madat$lc5.chair.party.switch==0,]
@@ -278,9 +278,14 @@ server <- function(input, output) {
     
     rownames(tab) <- country_list[!is.na(country_list)]
     
-    tab <- rbind(meta_alt, tab)
+    tab <-  rbind(meta_alt, tab)
+    if(!is.null(meta_alt)) tab <- rbind(tab[rownames(tab)== "Meta (all studies)",, drop=FALSE],
+                                        tab[rownames(tab)=="meta_alt",, drop=FALSE],
+                                        tab[!rownames(tab) %in% c("Meta (all studies)", "meta_alt"), , drop=FALSE])
+    
+    # tab <- ifelse(nrow(tab) > 1, rbind(tab[1,], meta_alt, tab[2:length(tab),]), rbind(tab, meta_alt))
 
-    if(!is.null(meta_alt)) rownames(tab)[1] <- "Meta (subgroup)"
+    if(!is.null(meta_alt)) rownames(tab)[which(rownames(tab)=="meta_alt")] <- "Meta (subgroup)"
     
     tab
   })
