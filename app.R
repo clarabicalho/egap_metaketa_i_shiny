@@ -116,7 +116,7 @@ ui <- fluidPage(
                                 choices = c("Meta (all studies)" = "all",
                                             "Meta (subgroup)" = "subgroup",
                                             country_opts),
-                                selected = c("all", "subgroup", country_opts))),
+                                selected = c("all"))),
     column(1,
            checkboxGroupInput('ma_select', 'Meta (subgroup)', 
                               choices = country_opts,
