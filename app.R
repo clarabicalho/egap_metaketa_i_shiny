@@ -293,6 +293,7 @@ server <- function(input, output) {
   title <- reactive({
     news <- input$news
     depvar <- case_when(input$depvar == "m1" ~ "vote for incumbent",
+                        input$depvar == "m1_against" ~ "vote against incumbent",
                         input$depvar == "m3" ~ "voter turnout",
                         input$depvar == "m5" ~ "effort",
                         input$depvar == "m6" ~ "honesty",
