@@ -161,7 +161,7 @@ ui <- fluidPage(
 
 # Define server logic required to plot output ----
 
-server <- function(input, output) {
+server <- function(input, output, session) {
 
   observeEvent(input$addData, {
     showModal(modalDialog(
@@ -193,7 +193,6 @@ server <- function(input, output) {
     # if(is.null(cov())) print("it's null!")
     # str(input$cov)
   })
-  
   
   contested <- reactive({
     ret <- "FALSE"
@@ -308,12 +307,12 @@ server <- function(input, output) {
   title <- reactive({
     news <- input$news
     depvar <- case_when(input$depvar == "m1" ~ "vote for incumbent",
-                        input$depvar == "m1_against" ~ "vote against incumbent",
                         input$depvar == "m3" ~ "voter turnout",
                         input$depvar == "m5" ~ "effort",
                         input$depvar == "m6" ~ "honesty",
                         input$depvar == "m8" ~ "backlash",
-                        input$depvar == "correct" ~ "correct recollection")
+                        input$depvar == "correct" ~ "correct recollection",
+                        input$depvar == "m1_against" ~ "vote against incumbent")
     
     if(input$news == "both") news <- "information"
     if(input$news == "good") news <- "good news"
