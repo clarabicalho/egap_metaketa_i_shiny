@@ -148,7 +148,7 @@ ui <- fluidPage(
                         choices = c("Include LCV chairs only (Uganda 2 study)" = "chairs_only",
                                     "Include LCV councilors only (Uganda 2 study)" = "councilors_only",
                                     "Include both LCV chairs and councilors (Uganda 2 study)" = "both"),
-                        selected = "both", style='padding:0px;')
+                        selected = "both")
            )
     )),
   
@@ -161,7 +161,7 @@ ui <- fluidPage(
 
 # Define server logic required to plot output ----
 
-server <- function(input, output, session) {
+server <- function(input, output) {
 
   observeEvent(input$addData, {
     showModal(modalDialog(
