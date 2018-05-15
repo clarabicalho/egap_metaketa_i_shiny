@@ -9,7 +9,7 @@
 # DONE add contested specs (weights, exclude councilors, contested elections, adding: uganda 1 coding of good news)
 # include bayesian graphs
 # integrate data upload
-# add download data/code option
+# DONE add download data/code option
 
 # publish as repo https://shiny.wzb.eu/apps/ipi/mk1/
 
