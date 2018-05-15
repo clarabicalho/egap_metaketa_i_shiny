@@ -142,10 +142,13 @@ ui <- fluidPage(
                               choices = c("Exclude non-contested elections (Uganda 2 study)" = "contested_elections",
                                           "Exclude redistricted councilors (Uganda 2 study)" = "excl_redistrict",
                                           "Exclude candidates who switched parties (Uganda 2 study)" = "excl_switch",
-                                          # "Exclude LCV councilors (Uganda 2 study)" = "councilors",
-                                          "Include LCV councilors only (Uganda 2 study)" = "councilors_only",
                                           "Use alternative coding of news (Uganda 1 study)" = "n_alt"),
-                              selected = c("contested_elections"))
+                              selected = c("contested_elections")),
+           radioButtons("lc5", "",
+                        choices = c("Include LCV chairs only (Uganda 2 study)" = "chairs_only",
+                                    "Include LCV councilors only (Uganda 2 study)" = "councilors_only",
+                                    "Include both LCV chairs and councilors (Uganda 2 study)" = "both"),
+                        selected = "both", style='padding:0px;')
            )
     )),
   
@@ -224,8 +227,11 @@ server <- function(input, output) {
     madat <- madat[is.na(madat$lc5.chair.party.switch)|madat$lc5.chair.party.switch==0,]
     madat <- madat[is.na(madat$lc5.councillor.party.switch)|madat$lc5.councillor.party.switch==0,]
   }
-  if("councilors_only" %in% input$contested){
+  if("councilors_only" %in% input$lc5){
     madat <- madat[(madat$ug2_councilor_dummy == 1 & madat$ctry == "ug2")|madat$ctry!="ug2",]
+  }
+  if("chairs_only" %in% input$lc5){
+    madat <- madat[(madat$ug2_councilor_dummy == 0 & madat$ctry == "ug2")|madat$ctry!="ug2",]
   }
   
   madat
