@@ -70,6 +70,12 @@ ui <- fluidPage(
   theme = shinytheme("yeti"),
   # shinythemes::themeSelector(),
   
+  #Tag with iframe js script to embed in EGAP website
+  tags$head(
+    tags$script(src="https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/3.5.16/iframeResizer.contentWindow.min.js",
+                type="text/javascript")
+  ),
+  
   # App title ----
   fluidRow(align = "center",
   titlePanel("Metaketa I - Information and Accountability")),
@@ -141,7 +147,10 @@ ui <- fluidPage(
                                           "Use alternative coding of news (Uganda 1 study)" = "n_alt"),
                               selected = c("contested_elections"))
            )
-    ))#,
+    )),
+  
+  #end of iframe
+  HTML('<div data-iframe-height></div>')
   
   # bsCollapsePanel("Notes", value="Notes",
                   # p("Notes on options above (weights only affect certain countries), discussion of contested decisions? "))
