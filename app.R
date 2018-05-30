@@ -3,7 +3,7 @@
 # DONE Fix weights and
 # include note on weights(brz, ug2, meta)
 # DONE xlim symmetrical?
-# add description + EGAP link
+# DONE add description + EGAP link
 # DONE fix covariate input
 # DONE allow select sample that gets calculated in meta (separately from default meta)
 # DONE add contested specs (weights, exclude councilors, contested elections, adding: uganda 1 coding of good news)
@@ -11,7 +11,7 @@
 # integrate data upload
 # DONE add download data/code option
 
-# publish as repo https://shiny.wzb.eu/apps/ipi/mk1/
+# published to https://shiny.wzb.eu/apps/ipi/mk1/
 
 library(shiny)
 library(dplyr)
@@ -60,9 +60,6 @@ cov_opts <- list("Age (M14)" = "m14i",
                  "Secret ballot (M26)" = "m26i",
                  "Free and fair election (M27)" = "m27i")
   
-# Exclude
-# excl_opts <- list("")
-
 # Define UI for Metaketa app ----------------------------------------------
 
 ui <- fluidPage(
@@ -109,7 +106,7 @@ ui <- fluidPage(
              #Option 2: Subset to good/bad/overall news
              selectInput("news", "News", selected = good_opts[1],
                           choices = good_opts),
-             #Option 5: Weights
+             #Option 3: Weights
              radioButtons("weight", "",
                           choices = list("Weight countries equally"   = "TRUE",
                                          "Weight subjects equally" = "FALSE"),
@@ -117,13 +114,14 @@ ui <- fluidPage(
            downloadButton("downloadData", "Download data"),
            actionButton("addData", "Add data")),
     column(2,
-             #Option 4: Country subset
+             #Option 4: Study subset
            checkboxGroupInput('country', 'Show results for', 
                                 choices = c("Meta (all studies)" = "all",
                                             "Meta (subgroup)" = "subgroup",
                                             country_opts),
                                 selected = c("all"))),
     column(1,
+           #Option 5: Alternative meta subgroup
            checkboxGroupInput('ma_select', 'Meta (subgroup)', 
                               choices = country_opts,
                               selected = country_opts)),
@@ -134,10 +132,11 @@ ui <- fluidPage(
                               selected = cov_opts)),
 
     column(3, 
-           #Option 6: Covariates
+           #Option 7: Nij
            radioButtons('n_cov', 'Include Nij as covariate?', 
                         choices = c("Yes" = "TRUE", "No" = "FALSE"),
                         selected = "TRUE"),
+           #Option 8: Contested specs
            checkboxGroupInput("contested", "Contested specifications",
                               choices = c("Exclude non-contested elections (Uganda 2 study)" = "contested_elections",
                                           "Exclude redistricted councilors (Uganda 2 study)" = "excl_redistrict",
@@ -166,7 +165,7 @@ server <- function(input, output) {
   observeEvent(input$addData, {
     showModal(modalDialog(
       title = "Add your data to the Metaketa I results",
-      "(For illustration purposes only! Do not attempt during public talks...)",
+      "(For illustration purposes only!)",
       fileInput("import_file1", "Choose .csv file", accept = ".csv"),
       easyClose = TRUE,
       footer = NULL
@@ -176,22 +175,11 @@ server <- function(input, output) {
   cov <- reactive({
    paste(input$cov, collapse = "+")
   })
-  
-  # wts <- reactive({
-  #   if(deparse(input$weight) == "TRUE")
-  #     TRUE
-  #   else
-  #     FALSE
-  # })
+
 
   output$print <- renderPrint({
     str(table())
-    # str(table())
-    # contested()
-    # input$contested
-    # cov <- ifelse(as.character(cov())=="", "NULL", as.character(cov()))
-    # if(is.null(cov())) print("it's null!")
-    # str(input$cov)
+
   })
   
   contested <- reactive({
@@ -242,9 +230,6 @@ server <- function(input, output) {
   })
   
   table <- reactive({
-    # covar <- cov()
-    # cov <- input$cov
-    
     c_list <- input$country[!input$country %in% "subgroup"]
     
     tab <- do.call("rbind", lapply(
@@ -281,7 +266,6 @@ server <- function(input, output) {
       row
     }
     
-    # tab <- rbind(tab[1,], meta_alt)
     country_list <- case_when(input$country == "ben" ~ "Benin",
                               input$country == "brz" ~ "Brazil",
                               input$country == "bf"  ~ "Burkina Faso",
@@ -297,8 +281,6 @@ server <- function(input, output) {
                                         tab[rownames(tab)=="meta_alt",, drop=FALSE],
                                         tab[!rownames(tab) %in% c("Meta (all studies)", "meta_alt"), , drop=FALSE])
     
-    # tab <- ifelse(nrow(tab) > 1, rbind(tab[1,], meta_alt, tab[2:length(tab),]), rbind(tab, meta_alt))
-
     if(!is.null(meta_alt)) rownames(tab)[which(rownames(tab)=="meta_alt")] <- "Meta (subgroup)"
     
     tab
@@ -354,8 +336,6 @@ server <- function(input, output) {
   
 }
 
-shinyApp(ui = ui, server = server)
-
 # run app -----------------------------------------------------------------
 
-# runApp("App_v1", display.mode = "showcase")
+shinyApp(ui = ui, server = server)
