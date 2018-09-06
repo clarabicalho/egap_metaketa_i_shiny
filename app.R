@@ -68,10 +68,11 @@ ui <- fluidPage(
   # shinythemes::themeSelector(),
   
   #Tag with iframe js script to embed in EGAP website
-  tags$head(
-    tags$script(src="https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/3.5.16/iframeResizer.contentWindow.min.js",
-                type="text/javascript")
-  ),
+  # tags$head(
+  #   tags$script(src="https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/3.5.16/iframeResizer.contentWindow.min.js",
+  #               type="text/javascript")
+  # ),
+  tags$body(tags$script(src="iframeResizer.contentWindow.min.js")),
   
   # App title ----
   fluidRow(align = "center",
@@ -108,11 +109,12 @@ ui <- fluidPage(
                           choices = good_opts),
              #Option 3: Weights
              radioButtons("weight", "",
-                          choices = list("Weight countries equally"   = "TRUE",
+                          choices = list("Weight studies equally"   = "TRUE",
                                          "Weight subjects equally" = "FALSE"),
                           selected = "TRUE"),
-           downloadButton("downloadData", "Download data"),
-           actionButton("addData", "Add data")),
+           downloadButton("downloadData", "Download data")
+           # actionButton("addData", "Add data")
+           ),
     column(2,
              #Option 4: Study subset
            checkboxGroupInput('country', 'Show results for', 
