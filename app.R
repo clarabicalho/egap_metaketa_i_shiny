@@ -81,8 +81,9 @@ ui <- fluidPage(
   br(),
   
   bsCollapsePanel("About", value="About",
-                  p("This app implements the core meta analyses for Metaketa 1 and allows users to explore sensitivity of results to alternative specifications."),
-                  p("Visit the ", a("EGAP website", href="http://egap.org/metaketa/metaketa-information-and-accountability"), "to learn more."),
+                  p("This app implements the core meta analyses for Metaketa I and allows users to explore sensitivity of results to alternative specifications."),
+                  p("Visit the ", a("EGAP website", href="http://egap.org/metaketa/metaketa-information-and-accountability"), "to learn more about Metaketa I."),
+                  p("Access the full replication code for the results presented below on the", a("Metaketa I Github repository", href="https://github.com/egap/metaketa-i"), "."),
                   p("Metaketa I Pre-meta-analysis Plan:", a("20150309AA", href="http://egap.org/registration/736"))
   ),
   
